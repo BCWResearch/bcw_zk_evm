@@ -1,6 +1,6 @@
 FROM rustlang/rust:nightly-bullseye-slim as builder
 
-RUN apt-get update && apt-get install -y libjemalloc2 libjemalloc-dev make libssl-dev
+RUN apt-get update && apt-get install -y libjemalloc2 libjemalloc-dev make libssl-dev pkg-config
 
 RUN \
   mkdir -p common/src  && touch common/src/lib.rs && \
