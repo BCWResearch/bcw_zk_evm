@@ -1,16 +1,5 @@
 [workspace]
-members = ["mpt_trie",
-    "proof_gen",
-    "trace_decoder",
-    "evm_arithmetization",
-    "zero_bin/leader",
-    "zero_bin/worker",
-    "zero_bin/common",
-    "zero_bin/ops",
-    "zero_bin/verifier",
-    "zero_bin/rpc",
-    "zero_bin/prover",
-    "zero_bin/coordinator"]
+members = [ "mpt_trie", "proof_gen", "trace_decoder", "evm_arithmetization", "zero_bin/leader", "zero_bin/worker", "zero_bin/common", "zero_bin/ops", "zero_bin/verifier", "zero_bin/rpc", "zero_bin/prover", "zero_bin/coordinator" ]
 resolver = "2"
 
 [workspace.package]
@@ -22,20 +11,7 @@ keywords = ["cryptography", "STARK", "plonky2", "ethereum", "zk"]
 categories = ["cryptography::cryptocurrencies"]
 
 [workspace.dependencies]
-alloy = { git = "https://github.com/alloy-rs/alloy", tag='v0.1.1', default-features = false, features = [
-    "consensus",
-    "reqwest",
-    "json-rpc",
-    "rlp",
-    "rpc",
-    "rpc-client",
-    "rpc-types-eth",
-    "rpc-types-trace",
-    "providers",
-    "transports",
-    "transport-http",
-    "rpc-types-debug"
-] }
+alloy = { git = "https://github.com/alloy-rs/alloy", tag = 'v0.1.1', default-features = false, features = [ "consensus", "reqwest", "json-rpc", "rlp", "rpc", "rpc-client", "rpc-types-eth", "rpc-types-trace", "providers", "transports", "transport-http", "rpc-types-debug" ] }
 anyhow = "1.0.40"
 async-stream = "0.3.5"
 axum = "0.7.4"
