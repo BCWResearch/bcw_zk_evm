@@ -63,8 +63,8 @@ jobs:
       - name: Build and push worker
         uses: docker/build-push-action@v5
         with:
-          context: zero_bin/
-          file: zero_bin/worker.Dockerfile
+          context: .
+          file: worker.Dockerfile
           push: true
           tags: ${{ steps.worker-meta.outputs.tags }}
           labels: ${{ steps.worker-meta.outputs.labels }}
@@ -74,8 +74,8 @@ jobs:
       - name: Build and push leader
         uses: docker/build-push-action@v5
         with:
-          context: zero_bin/
-          file: zero_bin/coordinator.Dockerfile
+          context: .
+          file: coordinator.Dockerfile
           push: true
           tags: ${{ steps.leader-meta.outputs.tags }}
           labels: ${{ steps.leader-meta.outputs.labels }}

@@ -11,17 +11,17 @@ COPY Cargo.toml .
 RUN sed -i "2s/.*/members = [\"common\", \"ops\", \"worker\"]/" Cargo.toml
 COPY Cargo.lock .
 
-COPY common/Cargo.toml ./common/Cargo.toml
-COPY ops/Cargo.toml ./ops/Cargo.toml
-COPY worker/Cargo.toml ./worker/Cargo.toml
+COPY zero_bin/common/Cargo.toml ./common/Cargo.toml
+COPY zero_bin/ops/Cargo.toml ./ops/Cargo.toml
+COPY zero_bin/worker/Cargo.toml ./worker/Cargo.toml
 
 COPY ./rust-toolchain.toml ./
 
 RUN cargo build --release --bin worker
 
-COPY common ./common
-COPY ops ./ops
-COPY worker ./worker
+COPY zero_bin/common ./common
+COPY zero_bin/ops ./ops
+COPY zero_bin/worker ./worker
 RUN \
   touch common/src/lib.rs && \
   touch ops/src/lib.rs && \

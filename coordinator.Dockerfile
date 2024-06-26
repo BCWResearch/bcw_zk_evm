@@ -14,23 +14,23 @@ COPY Cargo.toml .
 RUN sed -i "2s/.*/members = [\"ops\", \"leader\", \"common\", \"rpc\", \"prover\", \"coordinator\"]/" Cargo.toml
 COPY Cargo.lock .
 
-COPY ops/Cargo.toml ./ops/Cargo.toml
-COPY common/Cargo.toml ./common/Cargo.toml
-COPY rpc/Cargo.toml ./rpc/Cargo.toml
-COPY prover/Cargo.toml ./prover/Cargo.toml
-COPY leader/Cargo.toml ./leader/Cargo.toml
-COPY coordinator/Cargo.toml ./coordinator/Cargo.toml
+COPY zero_bin/ops/Cargo.toml ./ops/Cargo.toml
+COPY zero_bin/common/Cargo.toml ./common/Cargo.toml
+COPY zero_bin/rpc/Cargo.toml ./rpc/Cargo.toml
+COPY zero_bin/prover/Cargo.toml ./prover/Cargo.toml
+COPY zero_bin/leader/Cargo.toml ./leader/Cargo.toml
+COPY zero_bin/coordinator/Cargo.toml ./coordinator/Cargo.toml
 
 COPY ./rust-toolchain.toml ./
 
 RUN cargo build --verbose --release --bin coordinator
 
-COPY coordinator ./coordinator
-COPY ops ./ops
-COPY common ./common
-COPY rpc ./rpc
-COPY prover ./prover
-COPY leader ./leader
+COPY zero_bin/coordinator ./coordinator
+COPY zero_bin/ops ./ops
+COPY zero_bin/common ./common
+COPY zero_bin/rpc ./rpc
+COPY zero_bin/prover ./prover
+COPY zero_bin/leader ./leader
 
 RUN \
     touch ops/src/lib.rs && \
