@@ -13,10 +13,14 @@
 # - `/output` is where the binaries go.
 
 ARG BUILD_BASE=rustlang/rust:nightly-bullseye-slim
-FROM ${BUILD_BASE} AS build
+FROM --platform=$BUILDPLATFORM ${BUILD_BASE} AS build
+ARG TARGETPLATFORM
+ARG TARGETARCH
+ARG BUILDPLATFORM
 
 # Install build dependencies.
-RUN apt-get update && apt-get install -y \
+RUN dpkg add --add-architecture arm64 && \
+    apt-get update && apt-get install -y \
     # for jemalloc
     libjemalloc-dev \
     libjemalloc2 \
@@ -24,6 +28,10 @@ RUN apt-get update && apt-get install -y \
     # for openssl
     libssl-dev \
     pkg-config \
+    # for cross compilation
+    libssl-dev:arm64 \
+    gcc-aarch64-linux-gnu \
+    && rustup target add aarch64-unknown-linux-gnu \
     # clean the image
     && rm -rf /var/lib/apt/lists/*
 
@@ -48,9 +56,16 @@ set -eux
 # .cargo/config.toml
 cd /src
 
+TARGET=""
+case ${TARGETARCH} in \
+        arm64) TARGET="aarch64-unknown-linux-gnu" ;; \
+        amd64) TARGET="x86_64-unknown-linux-gnu" ;; \
+        *) exit 1 ;; \
+esac
+
 # use the cache mount
 # (we will not be able to to write to e.g `/src/target` because it is bind-mounted)
-CARGO_TARGET_DIR=/artifacts cargo build --locked "--profile=${PROFILE}" --all
+CARGO_TARGET_DIR=/artifacts cargo build --locked "--profile=${PROFILE}" "--target=${TARGET}" --all
 
 # narrow the find call to SUBDIR because if we just copy out all executables
 # we will break the cache invariant
