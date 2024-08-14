@@ -19,7 +19,7 @@ ARG TARGETARCH
 ARG BUILDPLATFORM
 
 # Install build dependencies.
-RUN dpkg add --add-architecture arm64 && \
+RUN dpkg --add-architecture arm64 && \
     apt-get update && apt-get install -y \
     # for jemalloc
     libjemalloc-dev \
@@ -57,8 +57,9 @@ set -eux
 cd /src
 
 TARGET=""
+CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=""
 case ${TARGETARCH} in \
-        arm64) TARGET="aarch64-unknown-linux-gnu" ;; \
+        arm64) TARGET="aarch64-unknown-linux-gnu" CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="/usr/bin/aarch64-linux-gnu-gcc";; \
         amd64) TARGET="x86_64-unknown-linux-gnu" ;; \
         *) exit 1 ;; \
 esac
