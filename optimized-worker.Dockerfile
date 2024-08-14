@@ -26,18 +26,18 @@ COPY zero_bin/ops zero_bin/ops
 COPY zero_bin/worker zero_bin/worker
 
 RUN \
-  touch zero_bin/common/src/lib.rs && \
-  touch zero_bin/ops/src/lib.rs && \
-  touch zero_bin/worker/src/main.rs && \
-  touch evm_arithmetization/src/lib.rs && \
-  touch mpt_trie/src/lib.rs && \
-  touch proc_macro/src/lib.rs
+    touch zero_bin/common/src/lib.rs && \
+    touch zero_bin/ops/src/lib.rs && \
+    touch zero_bin/worker/src/main.rs && \
+    touch evm_arithmetization/src/lib.rs && \
+    touch mpt_trie/src/lib.rs && \
+    touch proc_macro/src/lib.rs
 
-ENV RUSTFLAGS='-C target-cpu=native -Zlinker-features=-lld'
+ENV RUSTFLAGS='-C target-feature=+crt-static -C target-cpu=native -Zlinker-features=-lld'
 
 COPY ./target/pgo-profiles/*.profraw ./target/pgo-profiles/
 
-RUN cargo pgo optimize build -- --bin worker
+RUN cargo pgo optimize build -- --bin worker --target=x86_64-unknown-linux-gnu
 
 FROM debian:bullseye-slim
 RUN apt-get update && apt-get install -y ca-certificates libjemalloc2 make libssl-dev

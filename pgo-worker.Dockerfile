@@ -29,19 +29,19 @@ COPY zero_bin/ops zero_bin/ops
 COPY zero_bin/worker zero_bin/worker
 
 RUN \
-  touch zero_bin/common/src/lib.rs && \
-  touch zero_bin/ops/src/lib.rs && \
-  touch zero_bin/worker/src/main.rs && \
-  touch evm_arithmetization/src/lib.rs && \
-  touch mpt_trie/src/lib.rs && \
-  touch proc_macro/src/lib.rs
+    touch zero_bin/common/src/lib.rs && \
+    touch zero_bin/ops/src/lib.rs && \
+    touch zero_bin/worker/src/main.rs && \
+    touch evm_arithmetization/src/lib.rs && \
+    touch mpt_trie/src/lib.rs && \
+    touch proc_macro/src/lib.rs
 
 # Disable the lld linker for now, as it's causing issues with the linkme package.
 # https://github.com/rust-lang/rust/pull/124129
 # https://github.com/dtolnay/linkme/pull/88
-ENV RUSTFLAGS='-C target-cpu=native -Zlinker-features=-lld'
+ENV RUSTFLAGS='-C target-feature=+crt-static -C target-cpu=native -Zlinker-features=-lld'
 
-RUN cargo pgo build -- --bin worker
+RUN cargo pgo build -- --bin worker --target=x86_64-unknown-linux-gnu
 
 # NOTE: cannot use a separate runtime environment, because the pgo-binary doesn't seem to be generating its profiling data (found during testing).
 #FROM debian:bullseye-slim

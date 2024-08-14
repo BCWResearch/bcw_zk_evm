@@ -16,6 +16,19 @@ tracing-subscriber = { workspace = true }
 clap = { workspace = true }
 tokio = { workspace = true }
 log = "0.4.21"
+alloy = { git = "https://github.com/alloy-rs/alloy", tag = 'v0.1.1', default-features = false, features = [
+    "consensus",
+    "json-rpc",
+    "rlp",
+    "rpc",
+    "rpc-client",
+    "rpc-types-eth",
+    "rpc-types-trace",
+    "providers",
+    "transports",
+    "transport-http",
+    "rpc-types-debug",
+] }
 
 # Local dependencies
 ops = { workspace = true }
