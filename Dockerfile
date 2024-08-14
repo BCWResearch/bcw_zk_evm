@@ -19,11 +19,11 @@ ARG TARGETARCH
 ARG BUILDPLATFORM
 
 # Install build dependencies.
-RUN dpkg add --add-architecture arm64 && \
+RUN dpkg --add-architecture arm64 && \
     apt-get update && apt-get install -y \
     # for jemalloc
-    libjemalloc-dev \
-    libjemalloc2 \
+    libjemalloc-dev:${TARGETARCH} \
+    libjemalloc2:${TARGETARCH} \
     make \
     # for openssl
     libssl-dev \
@@ -31,6 +31,8 @@ RUN dpkg add --add-architecture arm64 && \
     # for cross compilation
     libssl-dev:arm64 \
     gcc-aarch64-linux-gnu \
+    libc6-dev-arm64-cross \
+    binutils-aarch64-linux-gnu \
     && rustup target add aarch64-unknown-linux-gnu \
     # clean the image
     && rm -rf /var/lib/apt/lists/*
@@ -57,8 +59,9 @@ set -eux
 cd /src
 
 TARGET=""
+CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=""
 case ${TARGETARCH} in \
-        arm64) TARGET="aarch64-unknown-linux-gnu" ;; \
+        arm64) TARGET="aarch64-unknown-linux-gnu" CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="/usr/bin/aarch64-linux-gnu-gcc";; \
         amd64) TARGET="x86_64-unknown-linux-gnu" ;; \
         *) exit 1 ;; \
 esac
@@ -78,7 +81,7 @@ fi
 # maxdepth because binaries are in the root
 # - other folders contain build scripts etc.
 mkdir /output
-find "/artifacts/$SUBDIR" \
+find "/artifacts/$TARGET/$SUBDIR" \
     -maxdepth 1 \
     -type f \
     -executable \
