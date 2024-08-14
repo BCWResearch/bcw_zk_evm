@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - shanghai-2
+      - cross-compile
 
 env:
   DEFAULT_TAGS: |
