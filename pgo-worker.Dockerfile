@@ -18,6 +18,8 @@ RUN dpkg --add-architecture arm64 && \
     libjemalloc-dev \
     libjemalloc2 \
     make \
+    lld \
+    clang-16 \
     # for openssl
     libssl-dev \
     pkg-config \
@@ -37,6 +39,10 @@ ARG PROFILE=release
 # forward the docker argument so that the script below can read it
 ENV PROFILE=${PROFILE}
 
+ENV CC=clang-16
+
+ENV RUSTFLAGS='-C target-feature=+crt-static -C link-arg=-static'
+
 WORKDIR /src
 
 COPY . .
@@ -50,9 +56,10 @@ RUN \
 set -eux
 
 TARGET=""
-CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=""
+#CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=""
+#CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="/usr/bin/aarch64-linux-gnu-gcc"
 case ${TARGETARCH} in \
-        arm64) TARGET="aarch64-unknown-linux-gnu" CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="/usr/bin/aarch64-linux-gnu-gcc";; \
+        arm64) TARGET="aarch64-unknown-linux-gnu" ;; \
         amd64) TARGET="x86_64-unknown-linux-gnu" ;; \
         *) exit 1 ;; \
 esac

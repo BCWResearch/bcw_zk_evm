@@ -33,7 +33,6 @@ categories = ["cryptography::cryptocurrencies"]
 [workspace.dependencies]
 alloy = { git = "https://github.com/alloy-rs/alloy", tag = 'v0.1.1', default-features = false, features = [
     "consensus",
-    "reqwest",
     "json-rpc",
     "rlp",
     "rpc",

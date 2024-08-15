@@ -1,4 +1,7 @@
-[build]
+#[build]
 # https://github.com/rust-lang/rust/pull/124129
 # https://github.com/dtolnay/linkme/pull/88
-rustflags = ["-Z", "linker-features=-lld"]
+#rustflags = ["-Z", "linker-features=-lld"]
+
+[target.aarch64-unknown-linux-gnu]
+linker = "clang-16"
