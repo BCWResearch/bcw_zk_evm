@@ -41,7 +41,7 @@ ENV PROFILE=${PROFILE}
 
 ENV CC=clang-16
 
-ENV RUSTFLAGS='-C target-feature=+crt-static -C link-arg=-static'
+ENV RUSTFLAGS='-C target-feature=+crt-static -C link-arg=-static -C linker=clang-16'
 
 WORKDIR /src
 
