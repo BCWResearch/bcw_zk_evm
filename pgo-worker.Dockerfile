@@ -39,9 +39,9 @@ ARG PROFILE=release
 # forward the docker argument so that the script below can read it
 ENV PROFILE=${PROFILE}
 
-ENV CC=clang-16
+ENV CC=aarch64-linux-gnu-gcc
 
-ENV RUSTFLAGS='-C target-feature=+crt-static -C link-arg=-static'
+ENV RUSTFLAGS='-C target-feature=+crt-static -C link-arg=-static -C linker=aarch64-linux-gnu-gcc  -C linker-flavor=gcc'
 
 WORKDIR /src
 
@@ -64,7 +64,10 @@ case ${TARGETARCH} in \
         *) exit 1 ;; \
 esac
 
-cargo pgo build -- --locked --bin worker "--target=${TARGET}"
+#cargo pgo build -- --locked --bin worker --target=aarch64-unknown-linux-gnu
+
+#WORKS WITHOUT PGO:
+cargo build --bin worker --target=aarch64-unknown-linux-gnu --release
 
 EOF
 
