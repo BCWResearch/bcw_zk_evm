@@ -224,6 +224,8 @@ impl ManyProver {
                 Some(benchmark_out) => benchmark_out.push(BenchmarkingStats {
                     block_number: benchmark_block_proof.proof.b_height,
                     n_txs: benchmark_block_proof.n_txs,
+                    n_gen_in: benchmark_block_proof.n_gen_in,
+                    n_segs: benchmark_block_proof.n_segs,
                     cumulative_n_txs: Some(cumulative_n_txs),
                     fetch_duration: fetch_time.copied(),
                     total_proof_duration: benchmark_block_proof

@@ -22,7 +22,7 @@ use super::input::BlockSource;
 pub enum FetchError {
     RpcFetchError(Error),
     LocalFileErr(Error),
-    GcsErr(Error)
+    GcsErr(Error),
 }
 
 impl std::fmt::Display for FetchError {
@@ -61,6 +61,7 @@ impl Checkpoint {
             Self::BlockNumberNegativeOffset(offset) => {
                 BlockId::Number(BlockNumberOrTag::Number(block_number - *offset))
             }
+            #[allow(unreachable_patterns)]
             _ => BlockId::Number(BlockNumberOrTag::Number(block_number - 1)),
         }
     }
@@ -155,8 +156,8 @@ pub async fn fetch(source: &BlockSource) -> Result<BenchmarkedProverInput, Fetch
                     Ok(proverinput) => proverinput,
                     Err(err) => {
                         tracing::error!("Failed to convert file into ProverInput: {}", err);
-                        return Err(FetchError::LocalFileErr(err.into()))
-                    },
+                        return Err(FetchError::LocalFileErr(err));
+                    }
                 };
 
                 Ok(BenchmarkedProverInput {
@@ -186,32 +187,35 @@ pub async fn fetch(source: &BlockSource) -> Result<BenchmarkedProverInput, Fetch
                 Ok(byte_data) => match String::from_utf8(byte_data) {
                     Ok(string) => string,
                     Err(err) => {
-                        tracing::error!("Failed to convert returned data into utf8 string: {}", err);
+                        tracing::error!(
+                            "Failed to convert returned data into utf8 string: {}",
+                            err
+                        );
                         return Err(FetchError::GcsErr(err.into()));
-                    },
+                    }
                 },
                 Err(err) => {
                     tracing::error!("Failed to pull witness from GCS: {}", err);
                     return Err(FetchError::GcsErr(err.into()));
-                },
+                }
             };
 
             match from_string(&string) {
                 Ok(proverinput) => Ok(BenchmarkedProverInput {
                     proverinput,
-                    fetch_times: Vec::new()
+                    fetch_times: Vec::new(),
                 }),
                 Err(err) => {
                     tracing::error!("Failed to deserialize string into ProverInput: {}", err);
-                    Err(FetchError::GcsErr(err.into()))
-                },
+                    Err(FetchError::GcsErr(err))
+                }
             }
         }
     }
 }
 
 fn from_string(string: &str) -> Result<ProverInput, Error> {
-    let des = &mut serde_json::Deserializer::from_str(&string);
+    let des = &mut serde_json::Deserializer::from_str(string);
 
     match Vec::<BlockProverInput>::deserialize(des) {
         Ok(blocks) => Ok(ProverInput { blocks }),

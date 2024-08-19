@@ -10,9 +10,10 @@ pub fn tracing() {
         .init();
 }
 
+use std::io;
+
 use dotenvy::dotenv;
 use tracing::warn;
-use std::io;
 
 pub const EVM_ARITH_VER_KEY: &str = "EVM_ARITHMETIZATION_PKG_VER";
 

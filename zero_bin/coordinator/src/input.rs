@@ -40,8 +40,7 @@ pub enum BlockSource {
         filepath: String,
         /// The name of the bucket to be used
         bucket: String,
-    }
-
+    },
 }
 
 unsafe impl Send for BlockSource {}

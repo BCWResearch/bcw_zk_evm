@@ -1,9 +1,6 @@
 //! This module helps with creating the [ProverStateManager]
 
-use std::{
-    default,
-    env::{self, VarError},
-};
+use std::env::{self, VarError};
 
 use tracing::{error, info, warn};
 use zero_bin_common::prover_state::{

@@ -29,6 +29,7 @@ pub struct ProofParams {
 }
 
 /// The main function for the client.
+#[allow(dead_code)]
 pub(crate) async fn client_main(
     runtime: Runtime,
     rpc_params: RpcParams,
