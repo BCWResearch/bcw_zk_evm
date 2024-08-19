@@ -24,12 +24,11 @@ RUN dpkg --add-architecture arm64 && \
     # for jemalloc
     libjemalloc-dev:${TARGETARCH} \
     libjemalloc2:${TARGETARCH} \
-    make \
+    make:${TARGETARCH} \
     # for openssl
-    libssl-dev \
-    pkg-config \
+    libssl-dev:${TARGETARCH} \
+    pkg-config:${TARGETARCH} \
     # for cross compilation
-    libssl-dev:arm64 \
     gcc-aarch64-linux-gnu \
     libc6-dev-arm64-cross \
     binutils-aarch64-linux-gnu \
@@ -41,7 +40,7 @@ ARG PROFILE=release
 # forward the docker argument so that the script below can read it
 ENV PROFILE=${PROFILE}
 
-ENV RUSTFLAGS='-C target-cpu=native -Zlinker-features=-lld'
+ENV RUSTFLAGS='-Zlinker-features=-lld'
 
 # Build the application.
 RUN \
@@ -62,7 +61,7 @@ TARGET=""
 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=""
 case ${TARGETARCH} in \
         arm64) TARGET="aarch64-unknown-linux-gnu" CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="/usr/bin/aarch64-linux-gnu-gcc";; \
-        amd64) TARGET="x86_64-unknown-linux-gnu" ;; \
+        amd64) TARGET="x86_64-unknown-linux-gnu" RUSTFLAGS="$RUSTFLAGS -C target-cpu=native ";; \
         *) exit 1 ;; \
 esac
 
