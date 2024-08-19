@@ -7,7 +7,6 @@ use std::{future::Future, time::Duration};
 use alloy::primitives::{BlockNumber, U256};
 use anyhow::{Context, Result};
 use chrono::{DateTime, Utc};
-use cli::CliProverConfig;
 use futures::stream::FuturesOrdered;
 use futures::{future::BoxFuture, FutureExt, TryFutureExt, TryStreamExt};
 use num_traits::ToPrimitive as _;
@@ -49,6 +48,8 @@ pub struct BenchmarkedGeneratedBlockProof {
     pub agg_dur: Option<Duration>,
     pub total_dur: Option<Duration>,
     pub n_txs: u64,
+    pub n_gen_in: usize,
+    pub n_segs: usize,
     pub gas_used: u64,
     pub difficulty: u64,
     pub start_time: DateTime<Utc>,
@@ -79,6 +80,8 @@ impl BlockProverInput {
         let prep_start = Instant::now();
         let start_time: DateTime<Utc> = Utc::now();
 
+        use std::sync::{Arc, Mutex};
+
         // Basic preparation
         use anyhow::Context as _;
         use evm_arithmetization::prover::SegmentDataIterator;
@@ -100,6 +103,7 @@ impl BlockProverInput {
             batch_size,
         )?;
 
+        let n_gen_in: usize = block_generation_inputs.len();
         let n_txs: u64 = block_generation_inputs
             .iter()
             .map(|tx| tx.signed_txns.len() as u64)
@@ -124,13 +128,15 @@ impl BlockProverInput {
             prep_dur.as_secs_f64()
         );
 
+        let counter: Arc<Mutex<usize>> = Arc::new(Mutex::new(0));
+
         let proof_start = Instant::now();
         let tx_proof_futs: FuturesUnordered<_> = block_generation_inputs
             .iter()
             .enumerate()
             .map(|(idx, txn)| {
-                let data_iterator = SegmentDataIterator::<Field>::new(txn, Some(max_cpu_len_log));
-
+                let mut data_iterator = SegmentDataIterator::<Field>::new(txn, Some(max_cpu_len_log));
+                data_iterator.set_counter(Arc::clone(&counter));
                 Directive::map(IndexedStream::from(data_iterator), &seg_ops)
                     .fold(&agg_ops)
                     .run(runtime)
@@ -198,6 +204,8 @@ impl BlockProverInput {
                 agg_wait_dur: Some(agg_wait_dur),
                 agg_dur: Some(agg_dur),
                 n_txs: n_txs as u64,
+                n_gen_in,
+                n_segs: *counter.lock().unwrap(),
                 gas_used,
                 difficulty: u64::try_from(difficulty).expect("Difficulty overflow"),
                 start_time,

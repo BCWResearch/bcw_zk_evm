@@ -41,10 +41,8 @@ async fn main() -> Result<()> {
     let psm = args.prover_state_config.into_prover_state_manager();
 
     info!("Worker ProverStateManager: {:?}", psm);
-    
-    psm.initialize()?;
 
-    
+    psm.initialize()?;
 
     let runtime = WorkerRuntime::from_config(&args.paladin, register()).await?;
 

@@ -2,7 +2,6 @@
 //! proofs
 use std::{
     env,
-    path::PathBuf,
     sync::Arc,
     time::{SystemTime, UNIX_EPOCH},
 };
@@ -15,7 +14,6 @@ pub use coordinator::{
     input::{self, ProveBlocksInput},
     manyprover, proofout, psm,
 };
-use dotenvy::dotenv;
 use ops::register;
 use paladin::{
     config::{Config, Serializer},
@@ -23,7 +21,6 @@ use paladin::{
 };
 // use leader::init;
 use tracing::{debug, error, info, warn};
-use zero_bin_common::prover_state;
 
 pub const SERVER_ADDR_ENVKEY: &str = "SERVER_ADDR";
 pub const DFLT_SERVER_ADDR: &str = "0.0.0.0:8080";
@@ -57,7 +54,7 @@ async fn main() -> Result<()> {
     //------------------------------------------------------------------------
 
     info!("Initializing the request queue");
-    let (mut tx, mut rx) = tokio::sync::mpsc::channel::<ProveBlocksInput>(50);
+    let (tx, mut rx) = tokio::sync::mpsc::channel::<ProveBlocksInput>(50);
 
     // Store it in a Data for server
     let post_queue = web::Data::new(tx);

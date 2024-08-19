@@ -20,7 +20,6 @@ mod init;
 mod stdio;
 
 pub use init::load_dotenvy_vars_if_present;
-
 pub use init::EVM_ARITH_VER_KEY;
 
 fn get_previous_proof(path: Option<PathBuf>) -> Result<Option<GeneratedBlockProof>> {
@@ -129,5 +128,3 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
-
-

@@ -1,5 +1,5 @@
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use anyhow::{anyhow, Result};
 use itertools::Itertools;
@@ -520,6 +520,15 @@ fn build_segment_data<F: RichField>(
 pub struct SegmentDataIterator<F: RichField> {
     interpreter: Interpreter<F>,
     partial_next_data: Option<GenerationSegmentData>,
+    counter: Option<Arc<Mutex<usize>>>,
+}
+
+impl<F: RichField> SegmentDataIterator<F> {
+
+    pub fn set_counter(&mut self, counter: Arc<Mutex<usize>>) {
+        self.counter = Some(counter);
+    }
+
 }
 
 impl<F: RichField> SegmentDataIterator<F> {
@@ -536,6 +545,7 @@ impl<F: RichField> SegmentDataIterator<F> {
         Self {
             interpreter,
             partial_next_data: None,
+            counter: None
         }
     }
 
@@ -606,6 +616,13 @@ impl<F: RichField> Iterator for SegmentDataIterator<F> {
         if let Some((data, next_data)) = self.generate_next_segment(self.partial_next_data.clone())
         {
             self.partial_next_data = next_data;
+            match &self.counter {
+                Some(counter) => {
+                    let mut num = counter.lock().unwrap();
+                    *num += 1;
+                },
+                None => (),
+            }
             Some((self.interpreter.generation_state.inputs.clone(), data))
         } else {
             None
