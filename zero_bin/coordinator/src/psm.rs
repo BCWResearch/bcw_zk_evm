@@ -49,7 +49,7 @@ pub fn load_psm_from_env() -> ProverStateManager {
             }
             None => {
                 warn!("Table Load Strategy not specified, using default");
-                CircuitPersistence::Disk(TableLoadStrategy::default())
+                CircuitPersistence::Disk(tbl_load_strat)
             }
         },
         Ok(persistence) => {
