@@ -60,11 +60,9 @@ pub fn load_psm_from_env() -> ProverStateManager {
             warn!("No circuit persistence specified, using default. Will attempt to use table load strategy if provided.");
 
             match (tbl_load_strat, CircuitPersistence::default()) {
-                // If given a tbl_load_strat and Circuit Persistence as a disk is the default, we go ahead
-                // and modify the tablt load strategy
-                (Some(tbl_load), CircuitPersistence::Disk(_)) => {
-                    CircuitPersistence::Disk(tbl_load)
-                },
+                // If given a tbl_load_strat and Circuit Persistence as a disk is the default, we go
+                // ahead and modify the tablt load strategy
+                (Some(tbl_load), CircuitPersistence::Disk(_)) => CircuitPersistence::Disk(tbl_load),
                 // Given the table load strategy and the default, warn we don't know how to
                 // apply the table load strategy and return the default
                 (Some(tbl_load), dflt) => {
