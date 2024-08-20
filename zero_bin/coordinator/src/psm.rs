@@ -49,7 +49,7 @@ pub fn load_psm_from_env() -> ProverStateManager {
             }
             None => {
                 warn!("Table Load Strategy not specified, using default");
-                CircuitPersistence::Disk(tbl_load_strat)
+                CircuitPersistence::Disk(TableLoadStrategy::default())
             }
         },
         Ok(persistence) => {
@@ -57,8 +57,23 @@ pub fn load_psm_from_env() -> ProverStateManager {
             panic!("Unable to determine circiut persistence: `{}`", persistence);
         }
         Err(env::VarError::NotPresent) => {
-            warn!("No circuit persistence specified, using default");
-            CircuitPersistence::default()
+            warn!("No circuit persistence specified, using default. Will attempt to use table load strategy if provided.");
+
+            match (tbl_load_strat, CircuitPersistence::default()) {
+                // If given a tbl_load_strat and Circuit Persistence as a disk is the default, we go ahead
+                // and modify the tablt load strategy
+                (Some(tbl_load), CircuitPersistence::Disk(_)) => {
+                    CircuitPersistence::Disk(tbl_load)
+                },
+                // Given the table load strategy and the default, warn we don't know how to
+                // apply the table load strategy and return the default
+                (Some(tbl_load), dflt) => {
+                    warn!("Default circuit persistence is {:?}, unsure how to apply table load strategy ({:?})", dflt, tbl_load);
+                    dflt
+                }
+                // Return None and the circuit persistence
+                (None, dflt) => dflt,
+            }
         }
         Err(env::VarError::NotUnicode(os_str)) => {
             error!("Non-Unicode circiut persistence: {:?}", os_str);
