@@ -32,7 +32,7 @@ ARG PROFILE=release
 ENV PROFILE=${PROFILE}
 
 
-ENV RUSTFLAGS='-C target-cpu=native -Zlinker-features=-lld'
+ENV RUSTFLAGS='-C target-cpu=native -C codegen_units=1 -Zlinker-features=-lld'
 
 # Build the application.
 RUN \
